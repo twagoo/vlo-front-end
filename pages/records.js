@@ -1,9 +1,10 @@
 const SERVICE_BASE_URL = 'http://localhost:8708';
 
-function Records({ records }) {
+function Records({ records, query }) {
     const recordsList = records.map(record => {
+        const link = "record/" + record.id;
         return <div key={record.id}>
-            <h2>{record.fields.name}</h2>
+            <h2><a href={link}>{record.fields.name}</a></h2>
             <p>{record.fields.description}</p>
         </div>
     });
@@ -11,6 +12,11 @@ function Records({ records }) {
     return (
         <div>
             <h1>Records</h1>
+            <form method="get">
+                <input type="search" name="q" placeholder="Query" defaultValue={query}></input>
+                <input type="submit" value="Search" />
+            </form>
+            <hr />
             {recordsList}
         </div>
     )
@@ -32,7 +38,8 @@ Records.getInitialProps = async (ctx) => {
     const res = await fetch(reqUrl);
     const json = await res.json();
     return {
-        records: json
+        records: json,
+        query: ctx.query['q']
     }
 };
 
