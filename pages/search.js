@@ -1,6 +1,6 @@
 const SERVICE_BASE_URL = 'http://localhost:8708';
 
-function Records({ records, query }) {
+function Search({ records, query }) {
     const recordsList = records.map(record => {
         const link = "record/" + record.id;
         return <div key={record.id}>
@@ -32,7 +32,7 @@ function requestUrlForContext(ctx) {
     return SERVICE_BASE_URL+'/records?' + new URLSearchParams(reqParams);
 }
 
-Records.getInitialProps = async (ctx) => {
+Search.getInitialProps = async (ctx) => {
     const reqUrl = requestUrlForContext(ctx);
 
     const res = await fetch(reqUrl);
@@ -43,4 +43,4 @@ Records.getInitialProps = async (ctx) => {
     }
 };
 
-export default Records;
+export default Search;
