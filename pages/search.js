@@ -1,25 +1,38 @@
+import SearchResults from "@/components/search-results";
+import { useState } from "react";
+
 const SERVICE_BASE_URL = 'http://localhost:8708';
 
-function Search({ records, query }) {
-    const recordsList = records.map(record => {
-        const link = "record/" + record.id;
-        return <div key={record.id}>
-            <h2><a href={link}>{record.fields.name}</a></h2>
-            <p>{record.fields.description}</p>
-        </div>
-    });
+function Search(props) {
+    const [records, setRecords] = useState(props.records);
+    const [query, setQuery] = useState(props.query);
+
+    const submitSearch = async function (e) {
+        console.log('Submit query: ', query);
+
+        const reqUrl = requestUrlParams({q: query});
+
+        const res = await fetch(reqUrl);
+        const json = await res.json();
+
+        setRecords(json);
+    }
 
     return (
         <div>
             <h1>Records</h1>
-            <form method="get">
-                <input type="search" name="q" placeholder="Query" defaultValue={query}></input>
+            <form method="get" onClick={submitSearch}>
+                <input type="search" name="q" placeholder="Query" defaultValue={query} onChange={setQuery}></input>
                 <input type="submit" value="Search" />
             </form>
             <hr />
-            {recordsList}
+            <SearchResults records={records} />
         </div>
     )
+}
+
+function requestUrlParams(reqParams) {
+    return SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
 }
 
 function requestUrlForContext(ctx) {
@@ -29,7 +42,7 @@ function requestUrlForContext(ctx) {
         reqParams.q = q;
     }
 
-    return SERVICE_BASE_URL+'/records?' + new URLSearchParams(reqParams);
+    return requestUrlParams(reqParams);
 }
 
 Search.getInitialProps = async (ctx) => {
