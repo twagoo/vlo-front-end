@@ -21,10 +21,10 @@ function Search(props) {
     return (
         <div>
             <h1>Records</h1>
-            <form method="get" onClick={submitSearch}>
-                <input type="search" name="q" placeholder="Query" defaultValue={query} onChange={setQuery}></input>
-                <input type="submit" value="Search" />
-            </form>
+            <div>
+                <input type="search" name="q" placeholder="Query" defaultValue={query} onChange={e=>setQuery(e.target.value)}></input>
+                <button onClick={submitSearch}>Search</button>
+            </div>
             <hr />
             <SearchResults records={records} />
         </div>
