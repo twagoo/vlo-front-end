@@ -1,11 +1,13 @@
+import { useState } from "react";
+import getConfig from 'next/config'
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
 import SearchResults from "@/components/search-results";
-import { useState } from "react";
 
-const SERVICE_BASE_URL = 'http://localhost:8708';
+const { publicRuntimeConfig } = getConfig()
+const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
 
 function Search(props) {
     const [records, setRecords] = useState(props.records);

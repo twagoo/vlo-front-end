@@ -1,8 +1,11 @@
+import getConfig from 'next/config'
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-const SERVICE_BASE_URL = 'http://localhost:8708';
+const { publicRuntimeConfig } = getConfig()
+const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
 
 function Record({ record }) {
 
