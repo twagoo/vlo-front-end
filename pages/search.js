@@ -1,3 +1,7 @@
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 import SearchResults from "@/components/search-results";
 import { useState } from "react";
 
@@ -10,7 +14,7 @@ function Search(props) {
     const submitSearch = async function (e) {
         console.log('Submit query: ', query);
 
-        const reqUrl = requestUrlParams({q: query});
+        const reqUrl = requestUrlParams({ q: query });
 
         const res = await fetch(reqUrl);
         const json = await res.json();
@@ -19,15 +23,19 @@ function Search(props) {
     }
 
     return (
-        <div>
-            <h1>Records</h1>
-            <div>
-                <input type="search" name="q" placeholder="Query" defaultValue={query} onChange={e=>setQuery(e.target.value)}></input>
-                <button onClick={submitSearch}>Search</button>
-            </div>
+        <Container fluid="md">
+            <Row>
+                <Col>
+                    <h1>Records</h1>
+                    <div>
+                        <input type="search" name="q" placeholder="Query" defaultValue={query} onChange={e => setQuery(e.target.value)}></input>
+                        <button onClick={submitSearch}>Search</button>
+                    </div>
+                </Col>
+            </Row>
             <hr />
             <SearchResults records={records} />
-        </div>
+        </Container>
     )
 }
 
