@@ -1,9 +1,9 @@
 import { useState } from "react";
 import getConfig from 'next/config'
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Container, Row, Col, Form, InputGroup, Button } from "react-bootstrap";
+import { XCircle } from "react-bootstrap-icons";
+
 import SearchResults from "@/components/search-results";
 
 const { publicRuntimeConfig } = getConfig()
@@ -14,6 +14,7 @@ function Search(props) {
     const [query, setQuery] = useState(props.query);
 
     const submitSearch = async function (e) {
+        e.preventDefault();
         console.log('Submit query: ', query);
 
         const reqUrl = requestUrlParams({ q: query });
@@ -25,19 +26,28 @@ function Search(props) {
     }
 
     return (
-        <Container fluid="md">
+        <>
+            <h2>Search</h2>
             <Row>
-                <Col>
-                    <h1>Records</h1>
-                    <div>
-                        <input type="search" name="q" placeholder="Query" defaultValue={query} onChange={e => setQuery(e.target.value)}></input>
-                        <button onClick={submitSearch}>Search</button>
-                    </div>
+                <Col md="6">
+                    <Form method="get" onSubmit={submitSearch}>
+                        <Form.Group controlId="query">
+                            <InputGroup>
+                                <Button type="button" variant="outline-secondary" onClick={e => setQuery('')}><XCircle /></Button>
+                                <Form.Control type="search" name="q" placeholder="Query"
+                                    value={query}
+                                    onChange={e => setQuery(e.target.value)}>
+                                </Form.Control>
+                                <Button type="submit">Search</Button>
+                            </InputGroup>
+                        </Form.Group>
+                    </Form>
                 </Col>
             </Row>
             <hr />
+            <h3>Search results</h3>
             <SearchResults records={records} />
-        </Container>
+        </>
     )
 }
 

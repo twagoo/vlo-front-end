@@ -1,4 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document'
+import { Container } from "react-bootstrap";
+
 
 export default function Document() {
   return (
@@ -16,7 +18,10 @@ export default function Document() {
         crossOrigin="anonymous" />
       </Head>
       <body>
-        <Main />
+        <Container fluid="md">
+          <h1>Virtual Language Observatory</h1>
+          <Main />
+        </Container>
         <NextScript />
       </body>
     </Html>
