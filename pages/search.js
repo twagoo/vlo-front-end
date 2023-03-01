@@ -69,9 +69,9 @@ Search.getInitialProps = async (ctx) => {
     const reqUrl = requestUrlForContext(ctx);
 
     const res = await fetch(reqUrl);
-    const json = await res.json();
+    const resultsJson = await res.json();
     return {
-        records: json,
+        records: resultsJson.records,
         query: ctx.query['q']
     }
 };
