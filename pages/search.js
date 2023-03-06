@@ -1,5 +1,4 @@
 import { useState } from "react";
-import getConfig from 'next/config'
 
 import { Row, Col, Form, InputGroup, Button } from "react-bootstrap";
 import { XCircle } from "react-bootstrap-icons";
@@ -7,8 +6,8 @@ import { XCircle } from "react-bootstrap-icons";
 import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
 
-const { publicRuntimeConfig } = getConfig()
-const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
+import { getSearchResult } from "@/service/VloApiClient"
+
 const DEFAULT_PAGE_SIZE = 5;
 
 function Search(props) {
@@ -16,16 +15,13 @@ function Search(props) {
     const [pagination, setPagination] = useState(props.pagination);
     const [query, setQuery] = useState(props.query);
 
-    const submitSearch = async function() {
+    const submitSearch = async function () {
         setPagination({
             ...pagination,
             from: 0
         });
 
-        const reqUrl = requestUrlWithParams(urlParamsFor(query, pagination));
-
-        const res = await fetch(reqUrl);
-        const json = await res.json();
+        const json = await getSearchResult(query, pagination);
 
         setRecords(json.records);
         setPagination({
@@ -41,7 +37,7 @@ function Search(props) {
         await submitSearch();
     }
 
-    const updatePagination = async function(newFrom) {
+    const updatePagination = async function (newFrom) {
         setPagination({
             ...pagination,
             from: newFrom
@@ -78,25 +74,6 @@ function Search(props) {
     )
 }
 
-function urlParamsFor(query, pagination) {
-    const params = {};
-    if (query != null) {
-        Object.assign(params, { q: query });
-    }
-    if (pagination != null) {
-        Object.assign(params, {
-            from: pagination.from,
-            size: pagination.pageSize
-        });
-    }
-
-    return params;
-}
-
-function requestUrlWithParams(reqParams) {
-    return SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
-}
-
 Search.getInitialProps = async (ctx) => {
     const q = ctx.query['q'] || null;
     let from = 0;
@@ -107,14 +84,11 @@ Search.getInitialProps = async (ctx) => {
         from: from,
         pageSize: ctx.query['pageSize'] || DEFAULT_PAGE_SIZE
     };
-    const reqUrl = requestUrlWithParams(urlParamsFor(q, pagination));
-
-    const res = await fetch(reqUrl);
-    const resultsJson = await res.json();
+    const resultsJson = await getSearchResult(q, pagination);
 
     return {
         records: resultsJson.records,
-        pagination: {...pagination, numFound: resultsJson.numFound},
+        pagination: { ...pagination, numFound: resultsJson.numFound },
         query: q
     }
 };

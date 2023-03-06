@@ -1,0 +1,31 @@
+
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
+const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
+
+function requestUrlWithParams(reqParams) {
+    return SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
+}
+
+function urlParamsFor(query, pagination) {
+    const params = {};
+    if (query != null) {
+        Object.assign(params, { q: query });
+    }
+    if (pagination != null) {
+        Object.assign(params, {
+            from: pagination.from,
+            size: pagination.pageSize
+        });
+    }
+
+    return params;
+}
+
+export async function getSearchResult(q, pagination) {
+    const reqUrl = requestUrlWithParams(urlParamsFor(q, pagination));
+
+    const res = await fetch(reqUrl);
+    const resultsJson = await res.json();
+    return resultsJson;
+}
