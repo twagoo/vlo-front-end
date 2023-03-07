@@ -54,7 +54,7 @@ function Search(props) {
                 <hr />
                 <h3>Search results</h3>
                 <SearchResultPagination {...pagination} setFrom={updatePagination} />
-                <SearchResults records={records} />
+                <SearchResults records={records} query={query} pagination={pagination} />
                 <SearchResultPagination {...pagination} setFrom={updatePagination} />
             </>
         );

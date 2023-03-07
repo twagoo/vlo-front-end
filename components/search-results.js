@@ -2,9 +2,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Link from 'next/link';
 
-export default function SearchResults({ records }) {
+export default function SearchResults({ records, query, pagination }) {
     const recordsList = records.map(record => {
-        const link = "record/" + record.id;
         return <Row key={record.id} >
             <Col>
                 <h2>

@@ -3,29 +3,39 @@ import log from '@/util/logging';
 
 import { getRecord } from '@/service/VloApiClient';
 
-import { Container, Row, Col, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
 
 function Record({ record, section, error }) {
+
+    // TODO: get search context from client state
+    const searchContext = {};
+    const searchQueryParams = new URLSearchParams(searchContext);
 
     if (error) {
         return (
             <Alert variant='danger'>{error}</Alert>
         );
     } else {
-
         return (
-            <Container fluid="md">
-                <h1>{record.fields.name}</h1>
-                <h2>{section}</h2>
-                <Row>
-                    <Col sm="2">Identifier</Col>
-                    <Col>{record.id}</Col>
-                </Row>
-                <Row>
-                    <Col sm="2">Description</Col>
-                    <Col>{record.fields.description}</Col>
-                </Row>
-            </Container>
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                    <BreadcrumbItem href={`/search?${searchQueryParams}`}>Search</BreadcrumbItem>
+                    <BreadcrumbItem href={`/records/${record.id}?${searchQueryParams}`}>{record.fields.name}</BreadcrumbItem>
+                </Breadcrumb>
+                <Container fluid="md">
+                    <h1>{record.fields.name}</h1>
+                    <h2>{section}</h2>
+                    <Row>
+                        <Col sm="2">Identifier</Col>
+                        <Col>{record.id}</Col>
+                    </Row>
+                    <Row>
+                        <Col sm="2">Description</Col>
+                        <Col>{record.fields.description}</Col>
+                    </Row>
+                </Container>
+            </>
         );
     }
 }
@@ -33,8 +43,8 @@ function Record({ record, section, error }) {
 function recordToProps(ctx, record) {
     return {
         props: {
-            section: ctx.params['section'] || 'info',
-            record: record
+            record: record,
+            section: ctx.params['section'] || 'info'
         },
         revalidate: 60 // revalidation limit
     };
