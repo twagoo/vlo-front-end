@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document'
 import { Container } from "react-bootstrap";
+import Script from 'next/script'
 
 
 export default function Document() {
@@ -7,10 +8,9 @@ export default function Document() {
     <Html lang="en">
       <Head>
         { /* TODO: bundled */ }
-      <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js" crossOrigin='anonymous'></script>
-      <script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js" crossOrigin='anonymous'></script>
-      <script src="https://cdn.jsdelivr.net/npm/react-bootstrap@next/dist/react-bootstrap.min.js" crossOrigin='anonymous'></script>
-      <script>var Alert = ReactBootstrap.Alert;</script>
+      <Script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js" crossOrigin='anonymous'></Script>
+      <Script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js" crossOrigin='anonymous'></Script>
+      <Script src="https://cdn.jsdelivr.net/npm/react-bootstrap@next/dist/react-bootstrap.min.js" crossOrigin='anonymous'></Script>
       <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
