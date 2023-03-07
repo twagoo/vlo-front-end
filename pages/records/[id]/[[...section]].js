@@ -1,19 +1,15 @@
-import getConfig from 'next/config'
+import getConfig from 'next/config';
+import log from '@/util/logging';
 
 import { getRecord } from '@/service/VloApiClient';
 
 import { Container, Row, Col, Alert } from 'react-bootstrap';
 
-const { publicRuntimeConfig } = getConfig()
-const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
-
 function Record({ record, section, error }) {
 
     if (error) {
         return (
-            <Container fluid="md">
-                <Alert variant='danger'>{error}</Alert>
-            </Container>
+            <Alert variant='danger'>{error}</Alert>
         );
     } else {
 
@@ -45,7 +41,7 @@ function recordToProps(ctx, record) {
 }
 
 function errorProps(err) {
-    console.log(err);
+    log.error(err);
     return {
         props: {
             error: err.message

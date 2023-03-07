@@ -1,20 +1,24 @@
+import getConfig from 'next/config';
+import log from '@/util/logging';
 
-import getConfig from 'next/config'
-const { publicRuntimeConfig } = getConfig()
-const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
+const { serverRuntimeConfig } = getConfig();
+const SERVICE_BASE_URL = serverRuntimeConfig.vloServiceBaseUrl;
 
-function apiRequest(reqUrl, { success, notFound, error }) {
-    return fetch(reqUrl)
-        .then(response => {
-            if (response.ok) {
-                return response.json().then(success);
-            } else if (response.status == 404) {
-                return notFound();
-            } else {
-                return error({ message: response.statusText });
-            }
-        })
-        .catch(error);
+async function apiRequest(reqUrl, { success, notFound, error }) {
+
+    try {
+        const response = await fetch(reqUrl);
+        if (response.ok) {
+            const json = await response.json();
+            return success(json);
+        } else if (response.status == 404) {
+            return notFound();
+        } else {
+            return error({ message: response.statusText });
+        }
+    } catch (e) {
+        return error(e);
+    }
 }
 
 function reqParamsForSearch(query, pagination) {
@@ -33,11 +37,15 @@ function reqParamsForSearch(query, pagination) {
     return params;
 }
 
-export function getSearchResult(q, pagination, handleError) {
+export function getSearchResult(q, pagination) {
     const reqParams = reqParamsForSearch(q, pagination);
     const reqUrl = SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
 
-    console.log('Requesting search results from', reqUrl);
+    log.debug('Requesting search results from', reqUrl);
+
+    function handleError(err) {
+        throw (new Error(err));
+    }
 
     return apiRequest(reqUrl, {
         success: (json) => json,
