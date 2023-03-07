@@ -22,6 +22,8 @@ function urlParamsFor(query, pagination) {
     return params;
 }
 
+
+
 export async function getSearchResult(q, pagination) {
     const reqUrl = requestUrlWithParams(urlParamsFor(q, pagination));
 
@@ -30,4 +32,21 @@ export async function getSearchResult(q, pagination) {
     const res = await fetch(reqUrl);
     const resultsJson = await res.json();
     return resultsJson;
+}
+
+export function getRecord(id, { success, notFound, error }) {
+
+    const reqUrl = SERVICE_BASE_URL + `/records/${id}`;
+
+    return fetch(reqUrl)
+        .then(response => {
+            if (response.ok) {
+                return response.json().then(success);
+            } else if (response.status == 404) {
+                return notFound();
+            } else {
+                return error(response.statusText);
+            }
+        })
+        .catch(error);
 }

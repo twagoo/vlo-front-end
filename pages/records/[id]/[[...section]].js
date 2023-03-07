@@ -1,49 +1,70 @@
 import getConfig from 'next/config'
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { getRecord } from '@/service/VloApiClient';
+
+import { Container, Row, Col, Alert } from 'react-bootstrap';
 
 const { publicRuntimeConfig } = getConfig()
 const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
 
-function Record({ record, section }) {
+function Record({ record, section, error }) {
 
-    return (
-        <Container fluid="md">
-            <h1>{record.fields.name}</h1>
-            <h2>{section}</h2>
-            <Row>
-                <Col sm="2">Identifier</Col>
-                <Col>{record.id}</Col>
-            </Row>
-            <Row>
-                <Col sm="2">Description</Col>
-                <Col>{record.fields.description}</Col>
-            </Row>
-        </Container>
-    )
+    if (error) {
+        return (
+            <Container fluid="md">
+                <Alert variant='danger'>{error}</Alert>
+            </Container>
+        );
+    } else {
+
+        return (
+            <Container fluid="md">
+                <h1>{record.fields.name}</h1>
+                <h2>{section}</h2>
+                <Row>
+                    <Col sm="2">Identifier</Col>
+                    <Col>{record.id}</Col>
+                </Row>
+                <Row>
+                    <Col sm="2">Description</Col>
+                    <Col>{record.fields.description}</Col>
+                </Row>
+            </Container>
+        );
+    }
+}
+
+function recordToProps(ctx, record) {
+    return {
+        props: {
+            section: ctx.params['section'] || 'info',
+            record: record
+        },
+        revalidate: 60 // revalidation limit
+    };
+}
+
+function errorProps(err) {
+    console.log(err);
+    return {
+        props: {
+            error: err.message
+        }
+    };
 }
 
 export async function getStaticProps(ctx) {
     const id = ctx.params['id'];
-    //TOOD: if no ID, error
-    const reqUrl = SERVICE_BASE_URL + '/records/' + id;
 
-    const res = await fetch(reqUrl);
-    const json = await res.json();
-
-    return {
-        props: {
-            section: ctx.params['section'] || 'info',
-            record: json
-        },
-        revalidate: 60 // revalidation limit
-    }
+    return await getRecord(id, {
+        success: (record) => recordToProps(ctx, record),
+        notFound: () => ({ notFound: true }),
+        error: errorProps
+    });
 }
 
 export async function getStaticPaths() {
-    // Incremental static regeneration
+    // Returning an empty paths list enables incremental static regeneration
     return { paths: [], fallback: 'blocking' };
 }
 
