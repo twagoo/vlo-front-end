@@ -17,22 +17,23 @@ function Search(props) {
     const [query, setQuery] = useState(props.query);
 
     const router = useRouter();
-    const pushStateToRouter = function (q, from) {
+    const pushStateToRouter = function (q, pagination) {
         router.push({
             query: {
                 q: q,
-                from: from
+                from: pagination.from,
+                pageSize: pagination.pageSize
             }
         });
     }
 
     const handleSearchFormSubmit = function (e) {
         e.preventDefault();
-        pushStateToRouter(query, 0);
+        pushStateToRouter(query, { ...pagination, from: 0 });
     }
 
     const updatePagination = function (newFrom) {
-        pushStateToRouter(query, newFrom);
+        pushStateToRouter(query, { ...pagination, from: newFrom });
     }
 
     return (

@@ -3,14 +3,10 @@ import { Pagination } from "react-bootstrap";
 const MAX_PAGINATION_ITEMS = 8;
 
 
-function SearchResultPagination(props) {
-    const { from, pageSize, numFound, setFrom } = props;
-
-    const items = createItems(numFound, pageSize, from, setFrom);
-
+function SearchResultPagination({ from, pageSize, numFound, setFrom }) {
     return (
         <Pagination>
-            {items}
+            {createItems(numFound, pageSize, from, setFrom)}
         </Pagination>
     );
 }
@@ -29,13 +25,14 @@ function createItems(numFound, pageSize, from, setFrom) {
         range.push(i);
     }
 
-    const onPageSelect = function(page) {
+    const onPageSelect = function (page, event) {
+        event.preventDefault();
         setFrom(page * pageSize);
     };
 
     function createPaginationItem(page, activePage, label) {
         return (
-            <Pagination.Item key={page} active={page === activePage} onClick={e => { onPageSelect(page); } }>
+            <Pagination.Item key={page} active={page === activePage} onClick={onPageSelect.bind(this, page)}>
                 {label || (page + 1)}
             </Pagination.Item>
         );
