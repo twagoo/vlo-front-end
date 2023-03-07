@@ -7,11 +7,12 @@ import Col from 'react-bootstrap/Col';
 const { publicRuntimeConfig } = getConfig()
 const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
 
-function Record({ record }) {
+function Record({ record, section }) {
 
     return (
         <Container fluid="md">
             <h1>{record.fields.name}</h1>
+            <h2>{section}</h2>
             <Row>
                 <Col sm="2">Identifier</Col>
                 <Col>{record.id}</Col>
@@ -24,16 +25,26 @@ function Record({ record }) {
     )
 }
 
-Record.getInitialProps = async (ctx) => {
-    const id = ctx.query['id'];
+export async function getStaticProps(ctx) {
+    const id = ctx.params['id'];
     //TOOD: if no ID, error
     const reqUrl = SERVICE_BASE_URL + '/records/' + id;
 
     const res = await fetch(reqUrl);
     const json = await res.json();
+
     return {
-        record: json
+        props: {
+            section: ctx.params['section'] || 'info',
+            record: json
+        },
+        revalidate: 60 // revalidation limit
     }
-};
+}
+
+export async function getStaticPaths() {
+    // Incremental static regeneration
+    return { paths: [], fallback: 'blocking' };
+}
 
 export default Record;
