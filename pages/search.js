@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useRouter } from 'next/router';
 
-import { Row, Col, Form, InputGroup, Button } from "react-bootstrap";
-import { XCircle } from "react-bootstrap-icons";
+// VLO API client method
+import { getSearchResult } from "@/service/VloApiClient"
 
+// Components
+import { Row, Col } from "react-bootstrap";
+import SearchForm from "@/components/search-form";
 import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
-
-import { getSearchResult } from "@/service/VloApiClient"
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -27,7 +28,7 @@ function Search(props) {
 
     const handleSearchFormSubmit = function (e) {
         e.preventDefault();
-        pushStateToRouter(query, pagination.from);
+        pushStateToRouter(query, 0);
     }
 
     const updatePagination = function (newFrom) {
@@ -39,18 +40,7 @@ function Search(props) {
             <h2>Search</h2>
             <Row>
                 <Col md="6">
-                    <Form method="get" onSubmit={handleSearchFormSubmit}>
-                        <Form.Group controlId="query">
-                            <InputGroup>
-                                <Button type="button" variant="outline-secondary" onClick={e => setQuery('')}><XCircle /></Button>
-                                <Form.Control type="search" name="q" placeholder="Query"
-                                    value={query || ''}
-                                    onChange={e => setQuery(e.target.value)}>
-                                </Form.Control>
-                                <Button type="submit">Search</Button>
-                            </InputGroup>
-                        </Form.Group>
-                    </Form>
+                    <SearchForm query={query} setQuery={setQuery} onSubmit={handleSearchFormSubmit} />
                 </Col>
             </Row>
             <hr />
