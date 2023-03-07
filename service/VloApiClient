@@ -3,41 +3,7 @@ import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 const SERVICE_BASE_URL = publicRuntimeConfig.vloServiceBaseUrl;
 
-function requestUrlWithParams(reqParams) {
-    return SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
-}
-
-function urlParamsFor(query, pagination) {
-    const params = {};
-    if (query != null) {
-        Object.assign(params, { q: query });
-    }
-    if (pagination != null) {
-        Object.assign(params, {
-            from: pagination.from,
-            size: pagination.pageSize
-        });
-    }
-
-    return params;
-}
-
-
-
-export async function getSearchResult(q, pagination) {
-    const reqUrl = requestUrlWithParams(urlParamsFor(q, pagination));
-
-    console.log('Requesting search results from', reqUrl);
-
-    const res = await fetch(reqUrl);
-    const resultsJson = await res.json();
-    return resultsJson;
-}
-
-export function getRecord(id, { success, notFound, error }) {
-
-    const reqUrl = SERVICE_BASE_URL + `/records/${id}`;
-
+function apiRequest(reqUrl, { success, notFound, error }) {
     return fetch(reqUrl)
         .then(response => {
             if (response.ok) {
@@ -45,8 +11,46 @@ export function getRecord(id, { success, notFound, error }) {
             } else if (response.status == 404) {
                 return notFound();
             } else {
-                return error(response.statusText);
+                return error({ message: response.statusText });
             }
         })
         .catch(error);
+}
+
+function reqParamsForSearch(query, pagination) {
+    let params = {};
+    if (query != null) {
+        params = { q: query };
+    }
+    if (pagination != null) {
+        params = {
+            ...params,
+            from: pagination.from,
+            size: pagination.pageSize
+        };
+    }
+
+    return params;
+}
+
+export function getSearchResult(q, pagination, handleError) {
+    const reqParams = reqParamsForSearch(q, pagination);
+    const reqUrl = SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
+
+    console.log('Requesting search results from', reqUrl);
+
+    return apiRequest(reqUrl, {
+        success: (json) => json,
+        error: handleError,
+        notFound: () => {
+            // this should not happen at this endpoint, so if we get here treat it as an error
+            return handleError('Not found');
+        }
+    });
+
+}
+
+export function getRecord(id, { success, notFound, error }) {
+    const reqUrl = SERVICE_BASE_URL + `/records/${id}`;
+    return apiRequest(reqUrl, { success, notFound, error });
 }
