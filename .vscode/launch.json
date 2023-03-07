@@ -2,6 +2,12 @@
     "version": "0.2.0",
     "configurations": [
       {
+        "name": "Next.js: build & start",
+        "type": "node-terminal",
+        "request": "launch",
+        "command": "yarn build && yarn start"
+      },
+      {
         "name": "Next.js: debug server-side",
         "type": "node-terminal",
         "request": "launch",
