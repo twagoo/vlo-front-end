@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from 'next/router';
 
 import { Row, Col, Form, InputGroup, Button } from "react-bootstrap";
 import { XCircle } from "react-bootstrap-icons";
@@ -11,39 +12,26 @@ import { getSearchResult } from "@/service/VloApiClient"
 const DEFAULT_PAGE_SIZE = 5;
 
 function Search(props) {
-    const [records, setRecords] = useState(props.records);
-    const [pagination, setPagination] = useState(props.pagination);
+    const { records, pagination } = props;
     const [query, setQuery] = useState(props.query);
 
-    const submitSearch = async function () {
-        setPagination({
-            ...pagination,
-            from: 0
-        });
-
-        const json = await getSearchResult(query, pagination);
-
-        setRecords(json.records);
-        setPagination({
-            ...pagination,
-            numFound: json.numFound
+    const router = useRouter();
+    const pushStateToRouter = function (q, from) {
+        router.push({
+            query: {
+                q: q,
+                from: from
+            }
         });
     }
 
-    const handleSearchFormSubmit = async function (e) {
+    const handleSearchFormSubmit = function (e) {
         e.preventDefault();
-        console.log('Submit query: ', query);
-
-        await submitSearch();
+        pushStateToRouter(query, pagination.from);
     }
 
-    const updatePagination = async function (newFrom) {
-        setPagination({
-            ...pagination,
-            from: newFrom
-        });
-
-        await submitSearch();
+    const updatePagination = function (newFrom) {
+        pushStateToRouter(query, newFrom);
     }
 
     return (
@@ -74,8 +62,9 @@ function Search(props) {
     )
 }
 
-Search.getInitialProps = async (ctx) => {
+export async function getServerSideProps(ctx) {
     const q = ctx.query['q'] || null;
+
     let from = 0;
     if (ctx.query['from']) {
         from = parseInt(ctx.query['from']);
@@ -87,10 +76,12 @@ Search.getInitialProps = async (ctx) => {
     const resultsJson = await getSearchResult(q, pagination);
 
     return {
-        records: resultsJson.records,
-        pagination: { ...pagination, numFound: resultsJson.numFound },
-        query: q
-    }
-};
+        props: {
+            records: resultsJson.records,
+            pagination: { ...pagination, numFound: resultsJson.numFound },
+            query: q
+        }
+    };
+}
 
 export default Search;

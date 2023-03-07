@@ -25,6 +25,8 @@ function urlParamsFor(query, pagination) {
 export async function getSearchResult(q, pagination) {
     const reqUrl = requestUrlWithParams(urlParamsFor(q, pagination));
 
+    console.log('Requesting search results from', reqUrl);
+
     const res = await fetch(reqUrl);
     const resultsJson = await res.json();
     return resultsJson;
