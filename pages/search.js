@@ -10,7 +10,7 @@ import SearchForm from "@/components/search-form";
 import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
 
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 10;
 
 function Search(props) {
     const { error, records, pagination } = props;
@@ -53,9 +53,9 @@ function Search(props) {
                 </Row>
                 <hr />
                 <h3>Search results</h3>
-                <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                {records.length > 0 && <SearchResultPagination {...pagination} setFrom={updatePagination} />}
                 <SearchResults records={records} query={query} pagination={pagination} />
-                <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                {records.length > 0 && <SearchResultPagination {...pagination} setFrom={updatePagination} />}
             </>
         );
     }

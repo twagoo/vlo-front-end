@@ -1,22 +1,18 @@
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import Stack from 'react-bootstrap/Stack';
 import Link from 'next/link';
 
 export default function SearchResults({ records, query, pagination }) {
-    const recordsList = records.map(record => {
-        return <Row key={record.id} >
-            <Col>
-                <h2>
-                    <Link href={`/records/${encodeURIComponent(record.id)}`}>{record.fields.name}</Link>
-                </h2>
-                <p>{record.fields.description}</p>
-            </Col>
-        </Row>
-    });
-
     return (
-        <div>
-            {recordsList}
-        </div>
+        <Stack gap={3} className='my-3'>
+            {records.length <= 0 && <div>No results</div>}
+            {records.length > 0 && records.map(record =>
+                <div key={record.id} className='pt-2 px-lg-2 bg-light'>
+                    <h2>
+                        <Link href={`/records/${encodeURIComponent(record.id)}`}>{record.fields.name || 'Untitled'}</Link>
+                    </h2>
+                    <p>{record.fields.description}</p>
+                </div>
+            )}
+        </Stack>
     )
 }
