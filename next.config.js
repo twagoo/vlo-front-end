@@ -19,7 +19,11 @@ module.exports = async (phase, { defaultConfig }) => {
           permanent: true,
         },
       ]
-    },
+    }
+  }
+
+  if (process.env.BUILD_FOR_DOCKER) {
+    nextConfig['output'] = 'standalone';
   }
 
   return nextConfig
