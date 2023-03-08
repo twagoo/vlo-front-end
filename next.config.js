@@ -8,7 +8,7 @@ module.exports = async (phase, { defaultConfig }) => {
   const nextConfig = {
     serverRuntimeConfig: {
       logLevel: determineLogLevel(phase),
-      vloServiceBaseUrl: process.env.VLO_SERVICE_BASE_URL || 'http://localhost:8708',
+      vloServiceBaseUrl: process.env.VLO_SERVICE_BASE_URL,
     },
     reactStrictMode: true,
     async redirects() {

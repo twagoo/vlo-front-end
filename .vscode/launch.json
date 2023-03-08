@@ -1,37 +1,42 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "Next.js: build & start",
-        "type": "node-terminal",
-        "request": "launch",
-        "command": "yarn build && yarn start"
-      },
-      {
-        "name": "Next.js: debug server-side",
-        "type": "node-terminal",
-        "request": "launch",
-        "command": "yarn dev",
-        "envFile": "${workspaceFolder}/.vscode/debug.env"
-      },
-      {
-        "name": "Next.js: debug client-side",
-        "type": "chrome",
-        "request": "launch",
-        "url": "http://localhost:3000"
-      },
-      {
-        "name": "Next.js: debug full stack",
-        "type": "node-terminal",
-        "request": "launch",
-        "command": "yarn dev",
-        "envFile": "${workspaceFolder}/.vscode/debug.env",
-        "serverReadyAction": {
-          "pattern": "started server on .+, url: (https?://.+)",
-          "uriFormat": "%s",
-          "action": "debugWithChrome"
-        }
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: debug server-side",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn dev",
+      "envFile": "${workspaceFolder}/.vscode/debug.env"
+    },
+    {
+      "name": "Next.js: debug client-side",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "Next.js: debug full stack",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn dev",
+      "envFile": "${workspaceFolder}/.vscode/debug.env",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
       }
-    ]
-  }
-  
+    },
+    {
+      "name": "Next.js: build & start",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn build && yarn start",
+      "envFile": "${workspaceFolder}/.vscode/.env",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    }
+  ]
+}
