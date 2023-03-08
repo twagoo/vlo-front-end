@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 
 // VLO API client method
@@ -14,9 +14,25 @@ const DEFAULT_PAGE_SIZE = 10;
 
 function Search(props) {
     const { error, records, pagination } = props;
+    const [loading, setLoading] = useState(false);
     const [query, setQuery] = useState(props.query);
 
     const router = useRouter();
+
+    useEffect(() => {
+        // Unset 'loading' state when a route change completes or errors
+        const onRouteChange = () => { setLoading(false) };
+        router.events.on('routeChangeComplete', onRouteChange);
+        router.events.on('routeChangeError', onRouteChange);
+
+        // If the component is unmounted, unsubscribe
+        // from the event with the `off` method:
+        return () => {
+            router.events.off('routeChangeComplete', onRouteChange);
+            router.events.off('routeChangeError', onRouteChange);
+        };
+    });
+
     const pushStateToRouter = function (q, pagination) {
         router.push({
             query: {
@@ -29,10 +45,12 @@ function Search(props) {
 
     const handleSearchFormSubmit = function (e) {
         e.preventDefault();
+        setLoading(true);
         pushStateToRouter(query, { ...pagination, from: 0 });
     }
 
     const updatePagination = function (newFrom) {
+        setLoading(true);
         pushStateToRouter(query, { ...pagination, from: newFrom });
     }
 
@@ -53,9 +71,14 @@ function Search(props) {
                 </Row>
                 <hr />
                 <h3>Search results</h3>
-                {records.length > 0 && <SearchResultPagination {...pagination} setFrom={updatePagination} />}
-                <SearchResults records={records} query={query} pagination={pagination} />
-                {records.length > 0 && <SearchResultPagination {...pagination} setFrom={updatePagination} />}
+                {records.length <= 0 && <div>No results</div>}
+                {records.length > 0 && (
+                    <>
+                        <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                        <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
+                        <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                    </>
+                )}
             </>
         );
     }
