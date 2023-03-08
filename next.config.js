@@ -4,17 +4,11 @@ const DEFAULT_LOG_LEVEL = 'INFO'
 const DEV_LOG_LEVEL = 'DEBUG'
 
 module.exports = async (phase, { defaultConfig }) => {
-  let logLevel = DEFAULT_LOG_LEVEL;
-  if (phase === PHASE_DEVELOPMENT_SERVER) {
-    console.log('Development server phase detected - logging at', DEV_LOG_LEVEL, 'level (overriding default', DEFAULT_LOG_LEVEL, ')');
-    logLevel = DEV_LOG_LEVEL;
-  }
-
   /** @type {import('next').NextConfig} */
   const nextConfig = {
     serverRuntimeConfig: {
-      logLevel: logLevel,
-      vloServiceBaseUrl: 'http://localhost:8708',
+      logLevel: determineLogLevel(phase),
+      vloServiceBaseUrl: process.env.VLO_SERVICE_BASE_URL || 'http://localhost:8708',
     },
     reactStrictMode: true,
     async redirects() {
@@ -30,3 +24,16 @@ module.exports = async (phase, { defaultConfig }) => {
 
   return nextConfig
 }
+
+function determineLogLevel(phase) {
+  if (process.env.VLO_FRONT_END_LOG_LEVEL) {
+    console.log('Logging at configured', process.env.VLO_FRONT_END_LOG_LEVEL, 'level - overriding default', DEFAULT_LOG_LEVEL);
+    return process.env.VLO_FRONT_END_LOG_LEVEL;
+  } else if (phase === PHASE_DEVELOPMENT_SERVER) {
+    console.log('Development server phase detected - logging at', DEV_LOG_LEVEL, 'level - overriding default', DEFAULT_LOG_LEVEL);
+    return DEV_LOG_LEVEL;
+  } else {
+    return DEFAULT_LOG_LEVEL;
+  }
+}
+
