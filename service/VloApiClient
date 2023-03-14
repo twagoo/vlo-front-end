@@ -2,7 +2,13 @@ import getConfig from 'next/config';
 import log from '@/util/logging';
 
 const { serverRuntimeConfig } = getConfig();
-const SERVICE_BASE_URL = serverRuntimeConfig.vloServiceBaseUrl;
+const SERVICE_BASE_URL = process.env.VLO_SERVICE_BASE_URL;
+
+if (SERVICE_BASE_URL) {
+    log.info('Service base URL configured as', SERVICE_BASE_URL);
+} else {
+    log.error('Missing critical configuration value in environment: ', SERVICE_BASE_URL);
+}
 
 async function apiRequest(reqUrl, { success, notFound, error }) {
 
