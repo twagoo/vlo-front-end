@@ -9,6 +9,7 @@ import { Row, Col, Alert } from "react-bootstrap";
 import SearchForm from "@/components/search-form";
 import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
+import FacetsOverview from "@/components/facets-overview";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -26,12 +27,15 @@ export async function getServerSideProps(ctx) {
 
     try {
         const resultsJson = await getSearchResult(q, pagination);
+        //const facets = await ...
+        const facets = {};
 
         return {
             props: {
                 records: resultsJson.records,
                 pagination: { ...pagination, numFound: resultsJson.numFound },
-                query: q
+                query: q,
+                facets: facets
             }
         };
     } catch (err) {
@@ -68,7 +72,7 @@ function pushStateToRouter(router, q, pagination) {
 }
 
 function Search(props) {
-    const { error, records, pagination } = props;
+    const { error, records, pagination, facets } = props;
     const [loading, setLoading] = useState(false);
     const [query, setQuery] = useState(props.query);
 
@@ -103,15 +107,21 @@ function Search(props) {
                     </Col>
                 </Row>
                 <hr />
-                <h3>Search results</h3>
-                {records.length <= 0 && <div>No results</div>}
-                {records.length > 0 && (
-                    <>
-                        <SearchResultPagination {...pagination} setFrom={updatePagination} />
-                        <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
-                        <SearchResultPagination {...pagination} setFrom={updatePagination} />
-                    </>
-                )}
+                <Row>
+                    <Col md="3">
+                        <FacetsOverview facets={facets} />
+                    </Col>
+                    <Col md="9">
+                        <h3>Search results</h3>
+                        {records.length <= 0 && <div>No results</div>}
+                        {records.length > 0 && (
+                            <>
+                                <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                                <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
+                                <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                            </>
+                        )}</Col>
+                </Row>
             </>
         );
     }
