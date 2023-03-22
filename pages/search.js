@@ -12,6 +12,61 @@ import SearchResultPagination from "@/components/search-pagination";
 
 const DEFAULT_PAGE_SIZE = 10;
 
+export async function getServerSideProps(ctx) {
+    const q = ctx.query['q'] || null;
+
+    let from = 0;
+    if (ctx.query['from']) {
+        from = parseInt(ctx.query['from']);
+    }
+    const pagination = {
+        from: from,
+        pageSize: ctx.query['pageSize'] || DEFAULT_PAGE_SIZE
+    };
+
+    try {
+        const resultsJson = await getSearchResult(q, pagination);
+
+        return {
+            props: {
+                records: resultsJson.records,
+                pagination: { ...pagination, numFound: resultsJson.numFound },
+                query: q
+            }
+        };
+    } catch (err) {
+        return {
+            props: {
+                error: err.message
+            }
+        };
+    }
+}
+
+function setUpRouteChangeHandler(router, setLoading) {
+    // Unset 'loading' state when a route change completes or errors
+    const onRouteChange = () => { setLoading(false) };
+    router.events.on('routeChangeComplete', onRouteChange);
+    router.events.on('routeChangeError', onRouteChange);
+
+    // If the component is unmounted, unsubscribe
+    // from the event with the `off` method:
+    return () => {
+        router.events.off('routeChangeComplete', onRouteChange);
+        router.events.off('routeChangeError', onRouteChange);
+    };
+}
+
+function pushStateToRouter(router, q, pagination) {
+    router.push({
+        query: {
+            q: q,
+            from: pagination.from,
+            pageSize: pagination.pageSize
+        }
+    });
+}
+
 function Search(props) {
     const { error, records, pagination } = props;
     const [loading, setLoading] = useState(false);
@@ -19,39 +74,17 @@ function Search(props) {
 
     const router = useRouter();
 
-    useEffect(() => {
-        // Unset 'loading' state when a route change completes or errors
-        const onRouteChange = () => { setLoading(false) };
-        router.events.on('routeChangeComplete', onRouteChange);
-        router.events.on('routeChangeError', onRouteChange);
+    useEffect(setUpRouteChangeHandler.bind(this, router, setLoading));
 
-        // If the component is unmounted, unsubscribe
-        // from the event with the `off` method:
-        return () => {
-            router.events.off('routeChangeComplete', onRouteChange);
-            router.events.off('routeChangeError', onRouteChange);
-        };
-    });
-
-    const pushStateToRouter = function (q, pagination) {
-        router.push({
-            query: {
-                q: q,
-                from: pagination.from,
-                pageSize: pagination.pageSize
-            }
-        });
-    }
-
-    const handleSearchFormSubmit = function (e) {
+    const handleSearchFormSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        pushStateToRouter(query, { ...pagination, from: 0 });
+        pushStateToRouter(router, query, { ...pagination, from: 0 });
     }
 
-    const updatePagination = function (newFrom) {
+    const updatePagination = (newFrom) => {
         setLoading(true);
-        pushStateToRouter(query, { ...pagination, from: newFrom });
+        pushStateToRouter(router, query, { ...pagination, from: newFrom });
     }
 
     if (error) {
@@ -81,37 +114,6 @@ function Search(props) {
                 )}
             </>
         );
-    }
-}
-
-export async function getServerSideProps(ctx) {
-    const q = ctx.query['q'] || null;
-
-    let from = 0;
-    if (ctx.query['from']) {
-        from = parseInt(ctx.query['from']);
-    }
-    const pagination = {
-        from: from,
-        pageSize: ctx.query['pageSize'] || DEFAULT_PAGE_SIZE
-    };
-
-    try {
-        const resultsJson = await getSearchResult(q, pagination);
-
-        return {
-            props: {
-                records: resultsJson.records,
-                pagination: { ...pagination, numFound: resultsJson.numFound },
-                query: q
-            }
-        };
-    } catch (err) {
-        return {
-            props: {
-                error: err.message
-            }
-        };
     }
 }
 
