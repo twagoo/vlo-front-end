@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 
 // VLO API client method
-import { getSearchResult } from "@/service/VloApiClient"
+import { getSearchResult, getFacets } from "@/service/VloApiClient"
 
 // Components
 import { Row, Col, Alert } from "react-bootstrap";
@@ -27,8 +27,7 @@ export async function getServerSideProps(ctx) {
 
     try {
         const resultsJson = await getSearchResult(q, pagination);
-        //const facets = await ...
-        const facets = {};
+        const facets = await getFacets(q);
 
         return {
             props: {
@@ -100,9 +99,8 @@ function Search(props) {
     } else {
         return (
             <>
-                <h2>Search</h2>
                 <Row>
-                    <Col md="6">
+                    <Col md="12">
                         <SearchForm query={query} setQuery={setQuery} onSubmit={handleSearchFormSubmit} />
                     </Col>
                 </Row>
@@ -112,7 +110,6 @@ function Search(props) {
                         <FacetsOverview facets={facets} />
                     </Col>
                     <Col md="9">
-                        <h3>Search results</h3>
                         {records.length <= 0 && <div>No results</div>}
                         {records.length > 0 && (
                             <>

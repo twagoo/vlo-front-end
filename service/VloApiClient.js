@@ -64,7 +64,29 @@ export function getSearchResult(q, pagination) {
 
 }
 
+
+export function getFacets(q) {
+    const reqParams = reqParamsForSearch(q);
+    const reqUrl = SERVICE_BASE_URL + '/facets?' + new URLSearchParams(reqParams);
+
+    log.debug('Requesting search results from', reqUrl);
+
+    function handleError(err) {
+        throw (new Error(err));
+    }
+
+    return apiRequest(reqUrl, {
+        success: (json) => json,
+        error: handleError,
+        notFound: () => {
+            // this should not happen at this endpoint, so if we get here treat it as an error
+            return handleError('Not found');
+        }
+    });
+
+}
+
 export function getRecord(id, { success, notFound, error }) {
-    const reqUrl = SERVICE_BASE_URL + `/records/${id}`;
+    const reqUrl = `${SERVICE_BASE_URL}/records/${id}`;
     return apiRequest(reqUrl, { success, notFound, error });
 }
