@@ -1,5 +1,5 @@
 
-function FacetsOverview({ facets }) {
+function FacetsOverview({ facets, selection, setSelection }) {
     return (
         <>
             {facets.length > 0 && facets.map(facet =>

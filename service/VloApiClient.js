@@ -27,10 +27,18 @@ async function apiRequest(reqUrl, { success, notFound, error }) {
     }
 }
 
-function reqParamsForSearch(query, pagination) {
+function reqParamsForSearch(query, fq, pagination) {
     let params = {};
     if (query != null) {
         params = { q: query };
+    }
+    if (fq != null) {
+        if (!(Array.isArray(fq) && fq.length == 0)) {
+            params = {
+                ...params,
+                fq: fq
+            };
+        }
     }
     if (pagination != null) {
         params = {
@@ -43,8 +51,8 @@ function reqParamsForSearch(query, pagination) {
     return params;
 }
 
-export function getSearchResult(q, pagination) {
-    const reqParams = reqParamsForSearch(q, pagination);
+export function getSearchResult(q, fq, pagination) {
+    const reqParams = reqParamsForSearch(q, fq, pagination);
     const reqUrl = SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
 
     log.debug('Requesting search results from', reqUrl);
@@ -65,8 +73,8 @@ export function getSearchResult(q, pagination) {
 }
 
 
-export function getFacets(q) {
-    const reqParams = reqParamsForSearch(q);
+export function getFacets(q, fq) {
+    const reqParams = reqParamsForSearch(q, fq);
     const reqUrl = SERVICE_BASE_URL + '/facets?' + new URLSearchParams(reqParams);
 
     log.debug('Requesting search results from', reqUrl);

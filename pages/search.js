@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 
 // VLO API client method
 import { getSearchResult, getFacets } from "@/service/VloApiClient"
+import { fqToFacetSelectionMap, facetSelectionMapToFq } from "@/service/ParameterConverter"
 
 // Components
 import { Row, Col, Alert } from "react-bootstrap";
@@ -15,6 +16,7 @@ const DEFAULT_PAGE_SIZE = 10;
 
 export async function getServerSideProps(ctx) {
     const q = ctx.query['q'] || null;
+    const fq = ctx.query['fq'] || [];
 
     let from = 0;
     if (ctx.query['from']) {
@@ -26,14 +28,15 @@ export async function getServerSideProps(ctx) {
     };
 
     try {
-        const resultsJson = await getSearchResult(q, pagination);
-        const facets = await getFacets(q);
+        const resultsJson = await getSearchResult(q, fq, pagination);
+        const facets = await getFacets(q, fq);
 
         return {
             props: {
                 records: resultsJson.records,
                 pagination: { ...pagination, numFound: resultsJson.numFound },
                 query: q,
+                facetSelection: fq,
                 facets: facets
             }
         };
@@ -60,10 +63,11 @@ function setUpRouteChangeHandler(router, setLoading) {
     };
 }
 
-function pushStateToRouter(router, q, pagination) {
+function pushStateToRouter(router, q, facetSelection, pagination) {
     router.push({
         query: {
             q: q,
+            fq: facetSelectionMapToFq(facetSelection),
             from: pagination.from,
             pageSize: pagination.pageSize
         }
@@ -75,6 +79,9 @@ function Search(props) {
     const [loading, setLoading] = useState(false);
     const [query, setQuery] = useState(props.query);
 
+    // parse facet selection
+    const [facetSelection, setFacetSelection] = useState(fqToFacetSelectionMap(props.fq));
+
     const router = useRouter();
 
     useEffect(setUpRouteChangeHandler.bind(this, router, setLoading));
@@ -82,12 +89,18 @@ function Search(props) {
     const handleSearchFormSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        pushStateToRouter(router, query, { ...pagination, from: 0 });
+        pushStateToRouter(router, query, facetSelection, { ...pagination, from: 0 });
     }
 
     const updatePagination = (newFrom) => {
         setLoading(true);
-        pushStateToRouter(router, query, { ...pagination, from: newFrom });
+        pushStateToRouter(router, query, facetSelection, { ...pagination, from: newFrom });
+    }
+
+    const handleUpdateFacetSelection = (newSelection) => {
+        e.preventDefault();
+        setLoading(true);
+        pushStateToRouter(router, query, newSelection, { ...pagination, from: newFrom })
     }
 
     if (error) {
@@ -107,12 +120,13 @@ function Search(props) {
                 <hr />
                 <Row>
                     <Col md="3">
-                        <FacetsOverview facets={facets} />
+                        <FacetsOverview facets={facets} selection={facetSelection} setSelection={handleUpdateFacetSelection} />
                     </Col>
                     <Col md="9">
                         {records.length <= 0 && <div>No results</div>}
                         {records.length > 0 && (
                             <>
+                                <p>Showing {pagination.numFound} results</p>
                                 <SearchResultPagination {...pagination} setFrom={updatePagination} />
                                 <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
                                 <SearchResultPagination {...pagination} setFrom={updatePagination} />
