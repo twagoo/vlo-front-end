@@ -37,6 +37,12 @@
         "uriFormat": "%s",
         "action": "debugWithChrome"
       }
+    },
+    {
+      "name": "Test",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn jest"
     }
   ]
 }
