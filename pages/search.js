@@ -36,7 +36,7 @@ export async function getServerSideProps(ctx) {
                 records: resultsJson.records,
                 pagination: { ...pagination, numFound: resultsJson.numFound },
                 query: q,
-                facetSelection: fq,
+                fq: fq,
                 facets: facets
             }
         };
@@ -64,10 +64,12 @@ function setUpRouteChangeHandler(router, setLoading) {
 }
 
 function pushStateToRouter(router, q, facetSelection, pagination) {
+    const fq = facetSelectionMapToFq(facetSelection);
+
     router.push({
         query: {
             q: q,
-            fq: facetSelectionMapToFq(facetSelection),
+            fq: fq,
             from: pagination.from,
             pageSize: pagination.pageSize
         }
@@ -98,9 +100,8 @@ function Search(props) {
     }
 
     const handleUpdateFacetSelection = (newSelection) => {
-        e.preventDefault();
         setLoading(true);
-        pushStateToRouter(router, query, newSelection, { ...pagination, from: newFrom })
+        pushStateToRouter(router, query, newSelection, { ...pagination, from: 0 })
     }
 
     if (error) {
