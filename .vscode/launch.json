@@ -39,10 +39,29 @@
       }
     },
     {
-      "name": "Test",
-      "type": "node-terminal",
+      "type": "node",
       "request": "launch",
-      "command": "yarn jest"
+      "name": "Jest: all",
+      //"env": { "NODE_ENV": "test" },
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--config",
+        "jest.config.js"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest: current file",
+      //"env": { "NODE_ENV": "test" },
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "${fileBasenameNoExtension}",
+        "--config",
+        "jest.config.js"
+      ],
+      "console": "integratedTerminal"
     }
   ]
 }

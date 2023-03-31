@@ -12,6 +12,11 @@ const customJestConfig = {
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 
+  moduleNameMapper: {
+    // see: https://github.com/kulshekhar/ts-jest/issues/414#issuecomment-517944368
+    "^@/(.*)$": "<rootDir>/$1",
+  },
+
   testEnvironment: 'jest-environment-jsdom',
 }
 

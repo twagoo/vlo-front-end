@@ -12,12 +12,17 @@ export function fqToFacetSelectionMap(fq) {
 }
 
 export function facetSelectionMapToFq(selection) {
+    log.debug('Converting selection to FQ params:', selection);
     const fq = [];
     if (typeof selection === 'object') {
         object.toPairs(selection).forEach(([facet, values]) => {
-            values.forEach((value) => {
-                fq.push(`${facet}:${value}`);
-            })
+            if (Array.isArray(values)) {
+                values.forEach((value) => {
+                    fq.push(`${facet}:${value}`);
+                })
+            } else {
+                fq.push(`${facet}:${values}`)
+            }
         });
 
     }
