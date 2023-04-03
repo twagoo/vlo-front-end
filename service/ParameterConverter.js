@@ -1,13 +1,30 @@
 import log from '@/util/logging';
 import object from 'lodash/object'
+import split from 'lodash/split'
+import head from 'lodash/head'
+import tail from 'lodash/tail'
+import join from 'lodash/join'
 
-export function fqToFacetSelectionMap(fq) {
-    if (fq === null) {
+export function fqToFacetSelectionMap(fqs) {
+    if (fqs === null) {
         return {};
-    } else if (!Array.isArray(fq)) {
-        return fqToFacetSelectionMap([fq]);
+    } else if (!Array.isArray(fqs)) {
+        return fqToFacetSelectionMap([fqs]);
     } else {
-        //TODO convert
+        const result = {};
+        fqs.forEach(fq => {
+            const fqSplit = split(fq, ':');
+            if (fqSplit.length >= 2) {
+                const name = head(fqSplit);
+                const value = join(tail(fqSplit));
+
+                if (!result[name]) {
+                    result[name] = [];
+                }
+                result[name].push(value);
+            }
+        });
+        return result;
     }
 }
 
