@@ -27,24 +27,20 @@ async function apiRequest(reqUrl, { success, notFound, error }) {
     }
 }
 
-function reqParamsForSearch(query, fq, pagination) {
-    let params = {};
-    if (query != null) {
-        params = { q: query };
+function reqParamsForSearch(query, fqs, pagination) {
+    let params = new URLSearchParams();
+    if (query != null && query !== '') {
+        params.append('q', query);
     }
     if (pagination != null) {
-        params = {
-            ...params,
-            from: pagination.from,
-            size: pagination.pageSize
-        };
+        params.append('from', pagination.from);
+        params.append('size', pagination.pageSize);
     }
-    if (fq != null) {
-        if (!(Array.isArray(fq) && fq.length == 0)) {
-            params = {
-                ...params,
-                fq: fq
-            };
+    if (fqs != null) {
+        if (Array.isArray(fqs)) {
+            fqs.forEach(fq => params.append('fq', fq));
+        } else {
+            params.append('fq', fqs);
         }
     }
 
