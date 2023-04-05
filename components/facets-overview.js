@@ -7,7 +7,7 @@ function FacetsOverview({ facets, selection, setSelection }) {
         e.preventDefault();
         log.info('Facet selected');
         const change = {};
-        change[facet] = [value];
+        change[facet.name] = [value.value];
         log.info('selection', selection, 'merge with change', change);
         setSelection(merge(selection, change));
     };

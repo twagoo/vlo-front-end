@@ -6,25 +6,28 @@ import tail from 'lodash/tail'
 import join from 'lodash/join'
 
 export function fqToFacetSelectionMap(fqs) {
+    log.debug('Converting FQ params to selection:', fqs);
     if (fqs === null) {
         return {};
     } else if (!Array.isArray(fqs)) {
         return fqToFacetSelectionMap([fqs]);
     } else {
-        const result = {};
+        const selection = {};
         fqs.forEach(fq => {
             const fqSplit = split(fq, ':');
             if (fqSplit.length >= 2) {
                 const name = head(fqSplit);
                 const value = join(tail(fqSplit));
 
-                if (!result[name]) {
-                    result[name] = [];
+                if (!selection[name]) {
+                    selection[name] = [];
                 }
-                result[name].push(value);
+                selection[name].push(value);
             }
         });
-        return result;
+
+        log.info('fq:', fqs, '-> selection:', selection);
+        return selection;
     }
 }
 
@@ -43,6 +46,6 @@ export function facetSelectionMapToFq(selection) {
         });
 
     }
-    log.info('fq:', selection, '->', fq);
+    log.info('selection:', selection, '-> fq: ', fq);
     return fq;
 }
