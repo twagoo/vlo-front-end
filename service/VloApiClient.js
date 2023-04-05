@@ -32,6 +32,13 @@ function reqParamsForSearch(query, fq, pagination) {
     if (query != null) {
         params = { q: query };
     }
+    if (pagination != null) {
+        params = {
+            ...params,
+            from: pagination.from,
+            size: pagination.pageSize
+        };
+    }
     if (fq != null) {
         if (!(Array.isArray(fq) && fq.length == 0)) {
             params = {
@@ -40,20 +47,13 @@ function reqParamsForSearch(query, fq, pagination) {
             };
         }
     }
-    if (pagination != null) {
-        params = {
-            ...params,
-            from: pagination.from,
-            size: pagination.pageSize
-        };
-    }
 
-    return params;
+    return new URLSearchParams(params);
 }
 
 export function getSearchResult(q, fq, pagination) {
     const reqParams = reqParamsForSearch(q, fq, pagination);
-    const reqUrl = SERVICE_BASE_URL + '/records?' + new URLSearchParams(reqParams);
+    const reqUrl = SERVICE_BASE_URL + '/records?' + reqParams;
 
     log.debug('Requesting search results from', reqUrl);
 
@@ -75,7 +75,7 @@ export function getSearchResult(q, fq, pagination) {
 
 export function getFacets(q, fq) {
     const reqParams = reqParamsForSearch(q, fq);
-    const reqUrl = SERVICE_BASE_URL + '/facets?' + new URLSearchParams(reqParams);
+    const reqUrl = SERVICE_BASE_URL + '/facets?' + reqParams;
 
     log.debug('Requesting search results from', reqUrl);
 
