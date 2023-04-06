@@ -1,15 +1,31 @@
 import getConfig from 'next/config';
+import { useRouter } from 'next/router';
 import log from '@/util/logging';
 
 import { getRecord } from '@/service/VloApiClient';
 
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
+import { omitBy, isNil } from 'lodash';
+
+function searchQueryParamsFromRouter(router) {
+    //TODO: make this common
+    
+    // copy from router.query
+    const queryParams = router.query;
+    //TODO: add facet selection + pagination
+    const params = {
+        q: queryParams.q
+    };
+    return new URLSearchParams(omitBy(params, isNil));;
+}
 
 function Record({ record, section, error }) {
 
     // TODO: get search context from client state
     const searchContext = {};
-    const searchQueryParams = new URLSearchParams(searchContext);
+
+    const router = useRouter();
+    const searchQueryParams = searchQueryParamsFromRouter(router);
 
     if (error) {
         return (
