@@ -6,11 +6,15 @@ import { getSearchResult, getFacets } from "@/service/VloApiClient"
 import { fqToFacetSelectionMap, facetSelectionMapToFq } from "@/service/ParameterConverter"
 
 // Components
-import { Row, Col, Alert } from "react-bootstrap";
+import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from "react-bootstrap";
 import SearchForm from "@/components/search-form";
 import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
 import FacetsOverview from "@/components/facets-overview";
+
+// Functions
+import isNil from "lodash/isNil";
+import omitBy from "lodash/omitBy";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -63,16 +67,20 @@ function setUpRouteChangeHandler(router, setLoading) {
     };
 }
 
-function pushStateToRouter(router, q, facetSelection, pagination) {
+function toQueryParams(query, facetSelection, pagination) {
     const fq = facetSelectionMapToFq(facetSelection);
 
+    return omitBy({
+        q: query,
+        fq: fq,
+        from: pagination.from,
+        pageSize: pagination.pageSize
+    }, isNil);
+}
+
+function pushStateToRouter(router, q, facetSelection, pagination) {
     router.push({
-        query: {
-            q: q,
-            fq: fq,
-            from: pagination.from,
-            pageSize: pagination.pageSize
-        }
+        query: toQueryParams(q, facetSelection, pagination)
     });
 }
 
@@ -113,27 +121,33 @@ function Search(props) {
     } else {
         return (
             <>
-                <Row>
-                    <Col md="12">
-                        <SearchForm query={query} setQuery={setQuery} onSubmit={handleSearchFormSubmit} />
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col md="3">
-                        <FacetsOverview facets={facets} selection={facetSelection} setSelection={handleUpdateFacetSelection} />
-                    </Col>
-                    <Col md="9">
-                        {records.length <= 0 && <div>No results</div>}
-                        {records.length > 0 && (
-                            <>
-                                <p>Showing {pagination.numFound} results</p>
-                                <SearchResultPagination {...pagination} setFrom={updatePagination} />
-                                <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
-                                <SearchResultPagination {...pagination} setFrom={updatePagination} />
-                            </>
-                        )}</Col>
-                </Row>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                    <BreadcrumbItem href={`/search?${new URLSearchParams(toQueryParams(query, facetSelection, pagination))}`}>Search</BreadcrumbItem>
+                </Breadcrumb>
+                <Container fluid="md">
+                    <Row>
+                        <Col md="12">
+                            <SearchForm query={query} setQuery={setQuery} onSubmit={handleSearchFormSubmit} />
+                        </Col>
+                    </Row>
+                    <hr />
+                    <Row>
+                        <Col md="3">
+                            <FacetsOverview facets={facets} selection={facetSelection} setSelection={handleUpdateFacetSelection} />
+                        </Col>
+                        <Col md="9">
+                            {records.length <= 0 && <div>No results</div>}
+                            {records.length > 0 && (
+                                <>
+                                    <p>Showing {pagination.numFound} results</p>
+                                    <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                                    <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
+                                    <SearchResultPagination {...pagination} setFrom={updatePagination} />
+                                </>
+                            )}</Col>
+                    </Row>
+                </Container >
             </>
         );
     }
