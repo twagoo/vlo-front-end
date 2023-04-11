@@ -1,6 +1,8 @@
 import log from '@/util/logging';
 import assign from 'lodash/assign'
+import includes from 'lodash/includes'
 import merge from 'lodash/merge'
+import partition from 'lodash/partition'
 import union from 'lodash/union'
 import without from 'lodash/without'
 import { XLg } from "react-bootstrap-icons";
@@ -25,6 +27,14 @@ function FacetsOverview({ facets, selection, setSelection }) {
         setSelection(assign(selection, change));
     };
 
+    const isSelectedValue = function (facet, value) {
+        if (selection[facet.name]) {
+            return includes(selection[facet.name], value.value);
+        } else {
+            return false;
+        }
+    }
+
     const renderFacetValue = function (facet, facetSelection, value) {
         const valueLabel = value && (value.label || value.value);
 
@@ -48,19 +58,34 @@ function FacetsOverview({ facets, selection, setSelection }) {
 
     }
 
+    const renderFacet = function (facet) {
+        if (facet.values.length > 0) {
+            const renderValue = value => renderFacetValue(facet, selection[facet.name], value);
+
+            // partition into selected / not selected
+            const partitions = partition(facet.values, v => isSelectedValue(facet, v));
+
+            return (
+                <div key={facet.name} className='bg-light'>
+                    <h2>{facet.name}</h2>
+                    <ul>{[
+                        // selected values
+                        partitions[0].length > 0 && [
+                            partitions[0].map(renderValue),
+                            // divider if there are unselected values to be shown
+                            (partitions[1].length > 0 && <hr />)
+                        ],
+                        //unselected values
+                        partitions[1].map(renderValue)
+                    ]}</ul>
+                </div>
+            )
+        }
+    };
+
     return (
         <>
-            {facets.length > 0 && facets.map(facet => {
-                if (facet.values.length > 0)
-                    return (
-                        <div key={facet.name} className='bg-light'>
-                            <h2>{facet.name}</h2>
-                            {facet.values.length > 0 && <ul>{
-                                facet.values.map(value => renderFacetValue(facet, selection[facet.name], value))
-                            }</ul>}
-                        </div>
-                    )
-            })}
+            {facets.length > 0 && facets.map(renderFacet)}
         </>);
 }
 
