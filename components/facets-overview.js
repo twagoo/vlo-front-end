@@ -25,10 +25,12 @@ function FacetsOverview({ facets, selection, setSelection }) {
     };
 
     const renderFacetValue = function (facet, facetSelection, value) {
+        const valueLabel = value && (value.label || value.value);
+
         if (facetSelection && facetSelection.includes(value.value)) {
             return (
                 <li key={value.value}>
-                    {value.value}
+                    {valueLabel}
                     <a href="#"
                         onClick={(e) => { removeFromSelection(e, facet.name, value.value); }}><XLg /></a>
                 </li>
@@ -39,7 +41,7 @@ function FacetsOverview({ facets, selection, setSelection }) {
             <li key={value.value}>
                 <a href="#"
                     onClick={(e) => { addToSelection(e, facet.name, value.value); }}>
-                    {value.value}</a> ({value.count})
+                    {valueLabel}</a> ({value.count})
             </li>
         );
 
