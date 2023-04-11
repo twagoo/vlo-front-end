@@ -1,6 +1,7 @@
 import log from '@/util/logging';
 import assign from 'lodash/assign'
 import merge from 'lodash/merge'
+import union from 'lodash/union'
 import without from 'lodash/without'
 import { XLg } from "react-bootstrap-icons";
 
@@ -10,7 +11,7 @@ function FacetsOverview({ facets, selection, setSelection }) {
         e.preventDefault();
         log.info('Facet selected');
         const change = {};
-        change[facetName] = [value];
+        change[facetName] = union([value], selection[facetName]);
         log.info('selection', selection, 'merge with change', change);
         setSelection(merge(selection, change));
     };
