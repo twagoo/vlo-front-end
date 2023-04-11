@@ -1,11 +1,11 @@
 import Stack from 'react-bootstrap/Stack';
 import Link from 'next/link';
 import classNames from 'classnames';
-import { isNil, omitBy } from 'lodash';
 
-export default function SearchResults({ loading, records, query, pagination }) {
-    //TODO: add facet selection + pagination
-    const searchParams = new URLSearchParams(omitBy({ q: query }, isNil));
+import { toQueryParams } from "@/util/queryParametersConversion";
+
+export default function SearchResults({ loading, records, query, facetSelection, pagination }) {
+    const searchParams = new URLSearchParams(toQueryParams(query, facetSelection, pagination));
 
     return (
         <Stack gap={3} className={classNames('my-3', 'pt-2', 'px-lg-2', { 'opacity-25': loading })}>

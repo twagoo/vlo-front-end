@@ -3,7 +3,8 @@ import { useRouter } from 'next/router';
 
 // VLO API client method
 import { getSearchResult, getFacets } from "@/service/VloApiClient"
-import { fqToFacetSelectionMap, facetSelectionMapToFq } from "@/service/ParameterConverter"
+import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
+import { toQueryParams } from "@/util/queryParametersConversion";
 
 // Components
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from "react-bootstrap";
@@ -11,10 +12,6 @@ import SearchForm from "@/components/search-form";
 import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
 import FacetsOverview from "@/components/facets-overview";
-
-// Functions
-import isNil from "lodash/isNil";
-import omitBy from "lodash/omitBy";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -65,17 +62,6 @@ function setUpRouteChangeHandler(router, setLoading) {
         router.events.off('routeChangeComplete', onRouteChange);
         router.events.off('routeChangeError', onRouteChange);
     };
-}
-
-function toQueryParams(query, facetSelection, pagination) {
-    const fq = facetSelectionMapToFq(facetSelection);
-
-    return omitBy({
-        q: query,
-        fq: fq,
-        from: pagination.from,
-        pageSize: pagination.pageSize
-    }, isNil);
 }
 
 function pushStateToRouter(router, q, facetSelection, pagination) {
@@ -142,7 +128,7 @@ function Search(props) {
                                 <>
                                     <p>Showing {pagination.numFound} results</p>
                                     <SearchResultPagination {...pagination} setFrom={updatePagination} />
-                                    <SearchResults records={records} query={query} pagination={pagination} loading={loading} />
+                                    <SearchResults records={records} query={query} facetSelection={facetSelection} pagination={pagination} loading={loading} />
                                     <SearchResultPagination {...pagination} setFrom={updatePagination} />
                                 </>
                             )}</Col>

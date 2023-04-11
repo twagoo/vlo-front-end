@@ -17,7 +17,7 @@ export function fqToFacetSelectionMap(fqs) {
             const fqSplit = split(fq, ':');
             if (fqSplit.length >= 2) {
                 const name = head(fqSplit);
-                const value = join(tail(fqSplit));
+                const value = join(tail(fqSplit), ':');
 
                 if (!selection[name]) {
                     selection[name] = [];

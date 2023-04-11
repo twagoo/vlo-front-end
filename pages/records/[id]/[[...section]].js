@@ -1,20 +1,21 @@
-import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 import log from '@/util/logging';
 
 import { getRecord } from '@/service/VloApiClient';
+import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
 
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
 import { omitBy, isNil } from 'lodash';
 
 function searchQueryParamsFromRouter(router) {
-    //TODO: make this common
-    
+    //TODO: make this common?
+
     // copy from router.query
     const queryParams = router.query;
-    //TODO: add facet selection + pagination
+    //TODO: add pagination
     const params = {
-        q: queryParams.q
+        q: queryParams.q,
+        fq: queryParams.fq //TODO: fix case of multiple values
     };
     return new URLSearchParams(omitBy(params, isNil));;
 }
