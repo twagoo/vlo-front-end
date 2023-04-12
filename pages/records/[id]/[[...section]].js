@@ -6,18 +6,14 @@ import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
 
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
 import { omitBy, isNil } from 'lodash';
+import { toURLSearchParams } from '@/util/queryParametersConversion';
 
 function searchQueryParamsFromRouter(router) {
     //TODO: make this common?
 
     // copy from router.query
-    const queryParams = router.query;
-    //TODO: add pagination
-    const params = {
-        q: queryParams.q,
-        fq: queryParams.fq //TODO: fix case of multiple values
-    };
-    return new URLSearchParams(omitBy(params, isNil));;
+    const { q, fq, pagination } = router.query;
+    return toURLSearchParams(q, fqToFacetSelectionMap(fq), pagination);
 }
 
 function Record({ record, section, error }) {

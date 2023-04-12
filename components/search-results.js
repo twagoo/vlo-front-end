@@ -2,10 +2,10 @@ import Stack from 'react-bootstrap/Stack';
 import Link from 'next/link';
 import classNames from 'classnames';
 
-import { toQueryParams } from "@/util/queryParametersConversion";
+import { toURLSearchParams } from "@/util/queryParametersConversion";
 
 export default function SearchResults({ loading, records, query, facetSelection, pagination }) {
-    const searchParams = new URLSearchParams(toQueryParams(query, facetSelection, pagination));
+    const searchParams = toURLSearchParams(query, facetSelection, pagination);
 
     return (
         <Stack gap={3} className={classNames('my-3', 'pt-2', 'px-lg-2', { 'opacity-25': loading })}>

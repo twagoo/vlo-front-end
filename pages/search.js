@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 // VLO API client method
 import { getSearchResult, getFacets } from "@/service/VloApiClient"
 import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
-import { toQueryParams } from "@/util/queryParametersConversion";
+import { toURLSearchParams, toQueryParams } from "@/util/queryParametersConversion";
 
 // Components
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from "react-bootstrap";
@@ -109,7 +109,7 @@ function Search(props) {
             <>
                 <Breadcrumb>
                     <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                    <BreadcrumbItem href={`/search?${new URLSearchParams(toQueryParams(query, facetSelection, pagination))}`}>Search</BreadcrumbItem>
+                    <BreadcrumbItem href={`/search?${toURLSearchParams(query, facetSelection, pagination)}`}>Search</BreadcrumbItem>
                 </Breadcrumb>
                 <Container fluid="md">
                     <Row>
