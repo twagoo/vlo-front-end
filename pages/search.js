@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 
 // Services, business logic, utility functions
-import { getSearchResult, getFacets } from "@/service/VloApiClient"
-import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
-import { toURLSearchParams, toQueryParams, searchStateFromQueryParameters } from "@/util/queryParametersConversion";
+import { getSearchResult, getFacets } from "@/service/VloApiClient";
+import { toURLSearchParams, toQueryParams, searchStateFromQueryParameters, fqToFacetSelectionMap } from "@/service/ParameterConverter";
 
 // Components
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from "react-bootstrap";

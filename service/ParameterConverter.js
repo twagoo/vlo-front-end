@@ -1,9 +1,54 @@
 import log from '@/util/logging';
-import object from 'lodash/object'
-import split from 'lodash/split'
 import head from 'lodash/head'
-import tail from 'lodash/tail'
+import isNil from "lodash/isNil";
 import join from 'lodash/join'
+import object from 'lodash/object'
+import omitBy from "lodash/omitBy";
+import pick from "lodash/pick";
+import split from 'lodash/split'
+import tail from 'lodash/tail'
+
+const DEFAULT_PAGE_SIZE = 10;
+
+export function toURLSearchParams(query, facetSelection, pagination) {
+    const params = toQueryParams(query, facetSelection, pagination);
+    const result = new URLSearchParams(omitBy(pick(params, ['q', 'from', 'pageSize']), isNil));
+    if (params.fq) {
+        if (Array.isArray(params.fq)) {
+            params.fq.forEach(fq => result.append('fq', fq));
+        } else {
+            result.append('fq', params.fq)
+        }
+    }
+    return result;
+}
+
+export function toQueryParams(query, facetSelection, pagination) {
+    const fq = facetSelectionMapToFq(facetSelection);
+
+    return omitBy({
+        q: query,
+        fq: fq,
+        from: (pagination || {})['from'],
+        pageSize: (pagination || {})['pageSize']
+    }, isNil);
+}
+
+export function searchStateFromQueryParameters(queryObject) {
+    const q = queryObject['q'] || null;
+    const fq = queryObject['fq'] || [];
+
+    let from = 0;
+    if (queryObject['from']) {
+        from = parseInt(queryObject['from']);
+    }
+    const pagination = {
+        from: from,
+        pageSize: queryObject['pageSize'] || DEFAULT_PAGE_SIZE
+    };
+
+    return { q, fq, pagination };
+}
 
 export function fqToFacetSelectionMap(fqs) {
     log.debug('Converting FQ params to selection:', fqs);

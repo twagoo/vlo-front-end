@@ -2,7 +2,7 @@ import Stack from 'react-bootstrap/Stack';
 import Link from 'next/link';
 import classNames from 'classnames';
 
-import { toURLSearchParams } from "@/util/queryParametersConversion";
+import { toURLSearchParams } from "@/service/ParameterConverter";
 
 export default function SearchResults({ loading, records, query, facetSelection, pagination }) {
     const searchParams = toURLSearchParams(query, facetSelection, pagination);

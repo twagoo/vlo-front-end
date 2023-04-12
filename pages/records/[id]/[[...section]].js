@@ -4,8 +4,7 @@ import { useRouter } from 'next/router';
 // Services, business logic, utility functions
 import log from '@/util/logging';
 import { getRecord } from '@/service/VloApiClient';
-import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
-import { toURLSearchParams } from '@/util/queryParametersConversion';
+import { fqToFacetSelectionMap, toURLSearchParams } from "@/service/ParameterConverter"
 
 // Components
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
