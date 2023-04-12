@@ -1,10 +1,11 @@
+// Framework features
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 
-// VLO API client method
+// Services, business logic, utility functions
 import { getSearchResult, getFacets } from "@/service/VloApiClient"
 import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
-import { toURLSearchParams, toQueryParams } from "@/util/queryParametersConversion";
+import { toURLSearchParams, toQueryParams, searchStateFromQueryParameters } from "@/util/queryParametersConversion";
 
 // Components
 import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from "react-bootstrap";
@@ -13,25 +14,16 @@ import SearchResults from "@/components/search-results";
 import SearchResultPagination from "@/components/search-pagination";
 import FacetsOverview from "@/components/facets-overview";
 
-const DEFAULT_PAGE_SIZE = 10;
-
 export async function getServerSideProps(ctx) {
-    const q = ctx.query['q'] || null;
-    const fq = ctx.query['fq'] || [];
+    // state from context
+    const {q, fq, pagination} = searchStateFromQueryParameters(ctx.query);
 
-    let from = 0;
-    if (ctx.query['from']) {
-        from = parseInt(ctx.query['from']);
-    }
-    const pagination = {
-        from: from,
-        pageSize: ctx.query['pageSize'] || DEFAULT_PAGE_SIZE
-    };
-
+    // retrieve data
     try {
         const resultsJson = await getSearchResult(q, fq, pagination);
         const facets = await getFacets(q, fq);
 
+        // props for page
         return {
             props: {
                 records: resultsJson.records,
@@ -50,6 +42,13 @@ export async function getServerSideProps(ctx) {
     }
 }
 
+function pushStateToRouter(router, q, facetSelection, pagination) {
+    // push state back to query
+    router.push({
+        query: toQueryParams(q, facetSelection, pagination)
+    });
+}
+
 function setUpRouteChangeHandler(router, setLoading) {
     // Unset 'loading' state when a route change completes or errors
     const onRouteChange = () => { setLoading(false) };
@@ -64,12 +63,11 @@ function setUpRouteChangeHandler(router, setLoading) {
     };
 }
 
-function pushStateToRouter(router, q, facetSelection, pagination) {
-    router.push({
-        query: toQueryParams(q, facetSelection, pagination)
-    });
-}
-
+/**
+ * Search page
+ * @param {*} props 
+ * @returns 
+ */
 function Search(props) {
     const { error, records, pagination, facets } = props;
     const [loading, setLoading] = useState(false);
@@ -78,10 +76,11 @@ function Search(props) {
     // parse facet selection
     const [facetSelection, setFacetSelection] = useState(fqToFacetSelectionMap(props.fq));
 
+    // loading effect
     const router = useRouter();
-
     useEffect(setUpRouteChangeHandler.bind(this, router, setLoading));
 
+    // event handlers
     const handleSearchFormSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -99,12 +98,14 @@ function Search(props) {
     }
 
     if (error) {
+        // render error page
         return (
             <>
                 <Alert variant='danger'>{error}</Alert>
             </>
         )
     } else {
+        // render regular search page
         return (
             <>
                 <Breadcrumb>

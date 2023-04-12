@@ -1,34 +1,32 @@
+// Framework features
 import { useRouter } from 'next/router';
-import log from '@/util/logging';
 
+// Services, business logic, utility functions
+import log from '@/util/logging';
 import { getRecord } from '@/service/VloApiClient';
 import { fqToFacetSelectionMap } from "@/service/ParameterConverter"
-
-import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
-import { omitBy, isNil } from 'lodash';
 import { toURLSearchParams } from '@/util/queryParametersConversion';
 
-function searchQueryParamsFromRouter(router) {
-    //TODO: make this common?
+// Components
+import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
 
-    // copy from router.query
-    const { q, fq, pagination } = router.query;
-    return toURLSearchParams(q, fqToFacetSelectionMap(fq), pagination);
-}
-
+/**
+ * Record page
+ * @param {*} props 
+ * @returns 
+ */
 function Record({ record, section, error }) {
-
-    // TODO: get search context from client state
-    const searchContext = {};
-
-    const router = useRouter();
-    const searchQueryParams = searchQueryParamsFromRouter(router);
+    // copy state from router.query (URL query parameters)
+    const { q, fq, pagination } =  useRouter().query;
+    const searchQueryParams = toURLSearchParams(q, fqToFacetSelectionMap(fq), pagination);
 
     if (error) {
+        // render error page
         return (
             <Alert variant='danger'>{error}</Alert>
         );
     } else {
+        // render regular record page
         return (
             <>
                 <Breadcrumb>
