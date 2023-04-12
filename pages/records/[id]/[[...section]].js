@@ -7,7 +7,8 @@ import { getRecord } from '@/service/VloApiClient';
 import { fqToFacetSelectionMap, toURLSearchParams } from "@/service/ParameterConverter"
 
 // Components
-import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
+import { Container, Alert, Breadcrumb, BreadcrumbItem } from 'react-bootstrap';
+import RecordContent from '@/components/record-content';
 
 /**
  * Record page
@@ -15,8 +16,9 @@ import { Container, Row, Col, Alert, Breadcrumb, BreadcrumbItem } from 'react-bo
  * @returns 
  */
 function Record({ record, section, error }) {
+
     // copy state from router.query (URL query parameters)
-    const { q, fq, pagination } =  useRouter().query;
+    const { q, fq, pagination } = useRouter().query;
     const searchQueryParams = toURLSearchParams(q, fqToFacetSelectionMap(fq), pagination);
 
     if (error) {
@@ -29,21 +31,12 @@ function Record({ record, section, error }) {
         return (
             <>
                 <Breadcrumb>
-                    <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                    <BreadcrumbItem href={`/search?${searchQueryParams}`}>Search</BreadcrumbItem>
-                    <BreadcrumbItem href={`/records/${record.id}?${searchQueryParams}`}>{record.fields.name}</BreadcrumbItem>
+                    <BreadcrumbItem id="breadcrumb-home" href="/">Home</BreadcrumbItem>
+                    <BreadcrumbItem id="breadcrumb-search" href={`/search?${searchQueryParams}`}>Search</BreadcrumbItem>
+                    <BreadcrumbItem id="breadcrumb-record" href={`/records/${record.id}?${searchQueryParams}`}>{record.fields.name}</BreadcrumbItem>
                 </Breadcrumb>
                 <Container fluid="md">
-                    <h1>{record.fields.name}</h1>
-                    <h2>{section}</h2>
-                    <Row>
-                        <Col sm="2">Identifier</Col>
-                        <Col>{record.id}</Col>
-                    </Row>
-                    <Row>
-                        <Col sm="2">Description</Col>
-                        <Col>{record.fields.description}</Col>
-                    </Row>
+                    <RecordContent record={record} section={section} />
                 </Container>
             </>
         );
