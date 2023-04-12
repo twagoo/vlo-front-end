@@ -1,10 +1,5 @@
 import log from '@/util/logging';
-import assign from 'lodash/assign'
-import includes from 'lodash/includes'
-import merge from 'lodash/merge'
-import partition from 'lodash/partition'
-import union from 'lodash/union'
-import without from 'lodash/without'
+import { assign, includes, merge, partition, union, without } from 'lodash';
 import { XLg } from "react-bootstrap-icons";
 
 function FacetsOverview({ facets, selection, setSelection }) {

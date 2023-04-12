@@ -25,5 +25,21 @@
     "react-bootstrap": "^2.7.2",
     "react-bootstrap-icons": "^1.10.2",
     "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-imports": "^2.0.0"
+  },
+  "babel": {
+    "plugins": [
+      [
+        "babel-plugin-transform-imports",
+        {
+          "lodash": {
+            "transform": "lodash/${member}",
+            "preventFullImport": false
+          }
+        }
+      ]
+    ]
   }
 }

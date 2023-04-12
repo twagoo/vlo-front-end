@@ -1,12 +1,5 @@
 import log from '@/util/logging';
-import head from 'lodash/head'
-import isNil from "lodash/isNil";
-import join from 'lodash/join'
-import omitBy from "lodash/omitBy";
-import pick from "lodash/pick";
-import split from 'lodash/split'
-import tail from 'lodash/tail'
-import toPairs from 'lodash/toPairs'
+import { head, isNil, join, omitBy, pick, split, tail, toPairs } from 'lodash';
 
 const DEFAULT_PAGE_SIZE = 10;
 
