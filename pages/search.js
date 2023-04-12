@@ -15,7 +15,7 @@ import FacetsOverview from "@/components/facets-overview";
 
 export async function getServerSideProps(ctx) {
     // state from context
-    const {q, fq, pagination} = searchStateFromQueryParameters(ctx.query);
+    const { q, fq, pagination } = searchStateFromQueryParameters(ctx.query);
 
     // retrieve data
     try {
@@ -77,7 +77,7 @@ function Search(props) {
 
     // loading effect
     const router = useRouter();
-    useEffect(setUpRouteChangeHandler.bind(this, router, setLoading));
+    useEffect(() => setUpRouteChangeHandler(router, setLoading), [router]);
 
     // event handlers
     const handleSearchFormSubmit = (e) => {
