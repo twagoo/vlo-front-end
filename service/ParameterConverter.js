@@ -2,11 +2,11 @@ import log from '@/util/logging';
 import head from 'lodash/head'
 import isNil from "lodash/isNil";
 import join from 'lodash/join'
-import object from 'lodash/object'
 import omitBy from "lodash/omitBy";
 import pick from "lodash/pick";
 import split from 'lodash/split'
 import tail from 'lodash/tail'
+import toPairs from 'lodash/toPairs'
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -80,7 +80,7 @@ export function facetSelectionMapToFq(selection) {
     log.debug('Converting selection to FQ params:', selection);
     const fq = [];
     if (typeof selection === 'object') {
-        object.toPairs(selection).forEach(([facet, values]) => {
+        toPairs(selection).forEach(([facet, values]) => {
             if (Array.isArray(values)) {
                 values.forEach((value) => {
                     fq.push(`${facet}:${value}`);
