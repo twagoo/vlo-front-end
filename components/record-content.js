@@ -1,5 +1,25 @@
 // Components
 import { Row, Col, Tab, Tabs, Table } from 'react-bootstrap';
+import { last, split, truncate } from 'lodash';
+
+const refTruncateOptions = {
+    length: 100
+};
+
+function refToLabel(ref) {
+    if (ref.length - 3 <= refTruncateOptions.length) {
+        return ref;
+    } else {
+        // truncate in the middle
+        const filePart = last(split(ref, '/'));
+        const preambleLength = refTruncateOptions.length - filePart.length;
+        if(preambleLength <= 0) {
+            return `...${truncate(filePart, refTruncateOptions)}`;
+        } else {
+            return `${ref.substring(0,preambleLength-1)}.../${filePart}`;
+        }
+    }
+}
 
 export default function RecordContent({ record, section }) {
     return (
@@ -21,19 +41,21 @@ export default function RecordContent({ record, section }) {
                     <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <td>Type</td>
                                 <td>Name</td>
-                                <td>...</td>
+                                <td>Type</td>
                             </tr>
                         </thead>
                         <tbody>
-                            {record.fields._resourceRef && record.fields._resourceRef.map(element => (
+                            {record.resources && record.resources.map(resource => (
                                 <tr>
-                                    <td></td>
-                                    <td>{element}</td>
-                                    <td></td>
+                                    <td><a href={resource.ref} title={resource.ref}>{refToLabel(resource.ref)}</a></td>
+                                    <td>{resource.mediaType}</td>
                                 </tr>
                             ))}
+                            {
+                                (!record.resources || record.resources.length === 0) && (
+                                    <span>No resources</span>)
+                            }
                         </tbody>
                     </Table>
                 </Tab>
