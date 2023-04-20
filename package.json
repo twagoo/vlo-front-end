@@ -36,13 +36,11 @@
         {
           "lodash": {
             "transform": "lodash/${member}",
-            "preventFullImport": false
-          }
-        },
-        {
+            "preventFullImport": true
+          },
           "react-bootstrap": {
             "transform": "react-bootstrap/lib/${member}",
-            "preventFullImport": false
+            "preventFullImport": true
           }
         }
       ]
