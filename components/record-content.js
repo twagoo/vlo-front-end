@@ -47,7 +47,7 @@ export default function RecordContent({ record, section }) {
                         </thead>
                         <tbody>
                             {record.resources && record.resources.map(resource => (
-                                <tr>
+                                <tr key={resource.ref}>
                                     <td><a href={resource.ref} title={resource.ref}>{refToLabel(resource.ref)}</a></td>
                                     <td>{resource.mediaType}</td>
                                 </tr>
